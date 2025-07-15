@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from PIL import Image, ImageDraw
 from tensorflow.keras.preprocessing.image import load_img, img_to_array 
+import os
 
 # CIFAR-10 dataset for training images
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
@@ -97,3 +98,63 @@ for i, batch in enumerate(datagen.flow(x, batch_size=1)):
     plt.subplot(2, 2, i+1)
     plt.imshow(batch[0].astype('uint8'))
 plt.show()
+
+
+datagen = ImageDataGenerator(
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+)
+
+path1 = "sample_images"
+images = []
+
+for file in os.listdir(path1):
+    if file.lower().endswith("jpg"):
+        imgpath = os.path.join(path1, file)
+        img = load_img(imgpath)
+        x = img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        i = 0
+        for b in datagen.flow(x, batch_size=1):
+            plt.figure(i)
+            imgplot = plt.imshow(b[0].astype('uint8'))
+            i += 1
+            if i % 4 == 0:
+                break
+        plt.show()
+
+
+
+
+
+
+def add_random(image):
+    dice_throw1 = np.random.randint(1, 7, size = image.shape)
+    dice_throw2 = np.random.randint(1, 7, size = image.shape)
+    return image + dice_throw1 + dice_throw2
+
+# Instance of ImageDataGenerator with the custom augmentation
+datagen = ImageDataGenerator(preprocessing_function=add_random) 
+
+path1 = "sample_images"
+images = []
+
+for file in os.listdir(path1):
+    if file.lower().endswith("jpg"):
+        imgpath = os.path.join(path1, file)
+        img = load_img(imgpath)
+        x = img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        i = 0
+        for b in datagen.flow(x, batch_size=1):
+            plt.figure(i)
+            imgplot = plt.imshow(b[0].astype('uint8'))
+            i += 1
+            if i % 4 == 0:
+                break
+        plt.show()
+        
