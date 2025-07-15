@@ -30,3 +30,70 @@ img = load_img(img_path)
 x = img_to_array(img) 
 x = np.expand_dims(x, axis=0) 
 
+datagen = ImageDataGenerator(
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+
+i = 0
+for batch in datagen.flow(x, batch_size=1):
+    plt.figure(i)
+    imgplot = plt.imshow(batch[0].astype('uint8'))
+    i += 1
+    if i % 4 == 0:
+        break
+
+plt.show()
+
+
+
+
+datagen = ImageDataGenerator(
+    featurewise_center=True,
+    featurewise_std_normalization=True,
+    samplewise_center=True,
+    samplewise_std_normalization=True
+)
+
+datagen.fit(x)
+
+i = 0
+for batch in datagen.flow(x, batch_size=1):
+    plt.figure(i)
+    imgplot = plt.imshow(batch[0].astype('uint8'))
+    i += 1
+    if i % 4 == 0:
+        break
+
+plt.show()
+
+
+def add_random_noise(image):
+    noise = np.random.normal(0, 0.1, image.shape)
+    return image + noise
+
+# Instance of ImageDataGenerator with the custom augmentation
+datagen = ImageDataGenerator(preprocessing_function=add_random_noise)
+
+i = 0
+for batch in datagen.flow(x, batch_size=1):
+    plt.figure(i)
+    imgplot = plt.imshow(batch[0].astype('uint8'))
+    i += 1
+    if i % 4 == 0:
+        break
+
+plt.show()
+
+plt.figure(figsize=(10, 10))
+for i, batch in enumerate(datagen.flow(x, batch_size=1)):
+    if i >= 4:  
+        break
+    plt.subplot(2, 2, i+1)
+    plt.imshow(batch[0].astype('uint8'))
+plt.show()
