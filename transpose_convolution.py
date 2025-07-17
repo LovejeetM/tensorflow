@@ -1,6 +1,7 @@
 import tensorflow as tf 
 from tensorflow.keras.models import Model 
 from tensorflow.keras.layers import Input, Conv2D, Conv2DTranspose, UpSampling2D 
+from tensorflow.keras.layers import Dropout
 import numpy as np 
 import matplotlib.pyplot as plt 
 
@@ -53,9 +54,6 @@ plt.show()
 
 
 
-from tensorflow.keras.layers import Dropout, Conv2D, Conv2DTranspose, Input
-from tensorflow.keras.models import Model
-
 input_layer = Input(shape=(28, 28, 1))
 
 conv_layer = Conv2D(filters=32, kernel_size=(5, 5), activation='relu', padding='same')(input_layer)
@@ -71,4 +69,38 @@ history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split
 loss = model.evaluate(X_test, y_test)
 print(f'Test loss: {loss}')
 
+
+
+# dropout layer
+nput_layer = Input(shape=(28, 28, 1))
+
+
+conv_layer = Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same')(input_layer)
+dropout_layer = Dropout(0.5)(conv_layer)
+transpose_conv_layer = Conv2DTranspose(filters=1, kernel_size=(3, 3), activation='sigmoid', padding='same')(dropout_layer)
+
+model = Model(inputs=input_layer, outputs=transpose_conv_layer)
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+
+loss = model.evaluate(X_test, y_test)
+print(f'Test loss: {loss}')
+
+
+input_layer = Input(shape=(28, 28, 1))
+
+conv_layer = Conv2D(filters=32, kernel_size=(3, 3), activation='tanh', padding='same')(input_layer)
+transpose_conv_layer = Conv2DTranspose(filters=1, kernel_size=(3, 3), activation='tanh', padding='same')(conv_layer)
+
+model = Model(inputs=input_layer, outputs=transpose_conv_layer)
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+
+loss = model.evaluate(X_test, y_test)
+print(f'Test loss: {loss}')
 
